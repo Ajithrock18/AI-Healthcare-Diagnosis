@@ -58,9 +58,9 @@ CONTAINER ID   IMAGE                          STATUS
 
 | Component | URL | Purpose |
 |-----------|-----|---------|
-| **Frontend UI** | http://localhost | Streamlit dashboard |
-| **Backend API Docs** | http://localhost/docs | Swagger UI (interactive) |
-| **Backend API** | http://localhost/login, /predict | API endpoints |
+| **Frontend UI** | http://localhost:8080 | Streamlit dashboard |
+| **Backend API Docs** | http://localhost:8080/docs | Swagger UI (interactive) |
+| **Backend API** | http://localhost:8080/login, /predict | API endpoints |
 | **Direct Backend** | http://localhost:8000 | Backend without Nginx |
 | **Direct Frontend** | http://localhost:8501 | Frontend without Nginx |
 
