@@ -1,0 +1,19 @@
+# Frontend Dependencies for AI Healthcare Streamlit UI
+
+# Web UI Framework
+streamlit>=1.20.0
+streamlit-option-menu>=0.3.2
+
+# Image Processing
+pillow>=10.0.0
+
+# API Communication
+requests>=2.31.0
+httpx>=0.25.0
+
+# Data Processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Development & Testing
+pytest>=7.4.0
