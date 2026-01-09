@@ -260,6 +260,19 @@ curl -X POST "http://localhost:8000/predict" \
 }
 ```
 
+## ⚠️ Important: Git LFS for Large Files
+
+**Note**: Virtual environment (`.venv/`) and large binary files are excluded from git via `.gitignore`. If you encounter push issues related to large files:
+
+```bash
+# Clear git cache for large files
+git rm -r --cached .venv
+git filter-repo --invert-paths --path .venv
+
+# Then push
+git push origin main --force-with-lease
+```
+
 ## 🛠️ Dependencies
 
 ### Backend
@@ -442,6 +455,6 @@ For issues, feature requests, or questions:
 
 ---
 
-**Last Updated**: January 9, 2026
-**Version**: 1.0.0
-**Status**: ✅ Production Ready
+**Last Updated**: January 9, 2026  
+**Version**: 1.1.0  
+**Status**: ✅ Production Ready (Docker Containerized)
