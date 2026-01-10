@@ -33,3 +33,15 @@ uploads/
 # Test logs
 login_*.json
 test_*.json
+
+# Local development and editor files
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.vscode/
+.idea/
+*.log
+Thumbs.db
+.DS_Store
