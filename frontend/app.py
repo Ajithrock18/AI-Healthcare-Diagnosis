@@ -7,6 +7,7 @@ import os
 # URLs for Docker
 LOGIN_URL = "http://backend:8000/login"
 PREDICT_URL = "http://backend:8000/predict"
+REGISTER_URL = "http://backend:8000/register"
 
 st.set_page_config(page_title="AI Healthcare Diagnosis", page_icon="🩺", layout="centered")
 
@@ -36,16 +37,32 @@ else:
 # ---------------- Login ----------------
 if not st.session_state.access_token:
     st.subheader("🔐 Login")
+    # Registration block
+    with st.expander("Create account"):
+        reg_user = st.text_input("New username", key="reg_user")
+        reg_pass = st.text_input("New password", type="password", key="reg_pass")
+        if st.button("Register"):
+            try:
+                resp = requests.post(REGISTER_URL, json={"username": reg_user, "password": reg_pass}, timeout=5)
+                if resp.status_code == 201:
+                    st.success("Account created — you can now login.")
+                    # Optionally auto-fill login fields
+                    st.session_state['prefill_user'] = reg_user
+                else:
+                    st.error(f"Registration failed: {resp.text}")
+            except requests.exceptions.RequestException:
+                st.error("❌ Backend unreachable")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     if st.button("Login"):
         try:
-            r = requests.post(LOGIN_URL, json={"username": username, "password": password}, timeout=5)
+            # OAuth2 expects form-encoded data
+            r = requests.post(LOGIN_URL, data={"username": username, "password": password}, timeout=5)
             if r.status_code == 200:
                 data = r.json()
-                st.session_state.access_token = data["access_token"]
+                st.session_state.access_token = data.get("access_token")
                 st.session_state.username = username
-                st.session_state.role = data["role"]
+                st.session_state.role = data.get("role", "user")
                 st.success(f"Login successful ✅ Role: {st.session_state.role}")
                 st.rerun()
             else:

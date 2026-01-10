@@ -22,6 +22,7 @@ from auth import (
     verify_access_token,
     authenticate_user,
 )
+from pydantic import BaseModel, constr
 # ---------------- ENV ----------------
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
@@ -101,9 +102,33 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return {
         "access_token": create_access_token(user.username, user.role),
+        "role": user.role,
         "refresh_token": create_refresh_token(user.username),
         "token_type": "bearer",
     }
+
+
+class RegisterIn(BaseModel):
+    username: constr(min_length=3, max_length=128)
+    password: constr(min_length=8, max_length=128)
+    role: str = "user"
+
+
+@app.post("/register", status_code=201)
+def register(payload: RegisterIn, db: Session = Depends(get_db)):
+    """Register a new user. Returns username and role on success."""
+    existing = db.query(User).filter(User.username == payload.username).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Username already taken")
+    user = User(
+        username=payload.username,
+        hashed_password=hash_password(payload.password),
+        role=payload.role,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"username": user.username, "role": user.role}
 
 @app.post("/refresh")
 def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
