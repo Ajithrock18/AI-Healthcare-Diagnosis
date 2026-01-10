@@ -159,6 +159,34 @@ Predictions are automatically saved to your user profile and database.
 - **HTTPS Ready**: Nginx configured for TLS (use your own certificates)
 - **CORS**: Configured for development (update for production)
 
+## 🔐 Authentication storage & verification
+
+- **Where credentials are stored:** Usernames and password hashes are persisted in the backend SQLite database. The primary table and file are:
+  - SQLAlchemy model: `backend/models.py` -> `User` model (fields: `id`, `username`, `hashed_password`, `role`).
+  - SQLite file (development): `backend/healthcare.db` (created/used by `backend/database.py`).
+
+- **How passwords are stored:** Passwords are never stored in plain text. On user creation the password is hashed using Argon2 (via `passlib`) and only the hash is saved in the `hashed_password` column.
+  - Hashing function: `backend/auth.py` -> `hash_password(password)`
+
+- **How verification works (login flow):**
+  1. The `/login` endpoint (in `backend/main.py`) accepts credentials (OAuth2 form-encoded) and calls `authenticate_user(username, password)` from `backend/auth.py`.
+  2. `authenticate_user` loads the user record from the database and uses `verify_password(plain_password, hashed_password)` (in `backend/auth.py`) to compare the provided password with the stored Argon2 hash.
+  3. If verification succeeds, the backend issues JWT tokens:
+     - `create_access_token(username, role)` in `backend/auth.py` — short-lived access token.
+     - `create_refresh_token(username)` in `backend/auth.py` — longer-lived refresh token.
+  4. Protected endpoints (for example, `/predict`) use a dependency that reads the `Authorization: Bearer <token>` header and verifies the token with `verify_access_token(...)` in `backend/auth.py`.
+
+- **Where user creation happens:**
+  - Existing users are created at startup by `create_default_admin()` in `backend/auth.py` (called from `backend/main.py` startup event) and new users are added via `POST /register` implemented in `backend/main.py` (which uses `create_user()` in `backend/auth.py`).
+
+- **Files to inspect for implementation details:**
+  - `backend/auth.py` — hashing, verify, token creation, and helper functions
+  - `backend/models.py` — `User` SQLAlchemy model
+  - `backend/database.py` — session and engine setup (database file path)
+  - `backend/main.py` — `/register`, `/login`, `/refresh`, and protected endpoints
+
+If you want, I can add a short code snippet to the README demonstrating how to create a user programmatically (using the same hashing function) or add a CLI helper to manage users.
+
 ## 🤖 Model Details
 
 | Property | Value |
