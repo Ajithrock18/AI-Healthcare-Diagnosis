@@ -3,8 +3,8 @@ from jose import jwt
 from datetime import datetime, timedelta
 import os
 
-from backend.database import SessionLocal
-from backend.models import User
+from database import SessionLocal
+from models import User
 
 # ==========================
 # CONFIG
