@@ -62,6 +62,10 @@ def startup_event():
 def root():
     return {"message": "AI Healthcare API running"}
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 # ---------------- AUTH ----------------
 @app.post("/login")
 def login(form: OAuth2PasswordRequestForm = Depends()):

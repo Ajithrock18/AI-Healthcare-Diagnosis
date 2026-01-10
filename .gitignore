@@ -21,10 +21,9 @@ __pycache__/
 # OS files
 .DS_Store
 
-# Docker
-backend/Dockerfile
-frontend/Dockerfile
+# Build and deployment
 Dockerfiles/
+.dockerignore
 
 # Database and uploads
 backend/healthcare.db
