@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   backend:
     build:
-      context: .
-      dockerfile: ./backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: aihealthcareproject-backend
     ports:
       - "8000:8000"
@@ -16,8 +14,8 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: aihealthcareproject-frontend
     ports:
       - "8501:8501"
@@ -34,10 +32,8 @@ services:
     container_name: aihealthcareproject-nginx
     ports:
       - "8080:80"
-      - "8443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
     networks:
       - healthcare-network
     depends_on:
